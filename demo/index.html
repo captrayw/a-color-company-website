@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>/* arriving from the cobalt page: start under the same painted cobalt ground */try{if(/[?&]from=cobalt(&|$)/.test(location.search)&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('from-cobalt')}catch(e){}</script>
+<title>App Demo · A Color Company</title>
+<meta name="description" content="A short-video feed where every video carries one color and one tone, arranged to ease you into calm, and a feed that learns what you linger on.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&family=Caveat+Brush&display=swap">
+<style>
+:root {
+  --f-display: "Bricolage Grotesque", "Arial Black", "Helvetica Neue", sans-serif;
+  --f-body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "Space Mono", ui-monospace, Menlo, Consolas, monospace;
+  --f-hand: "Caveat Brush", "Marker Felt", "Comic Sans MS", cursive;
+  --frame: 1180px;
+  color-scheme: light;
+  --bg: #F3EEE4; --panel: #FFFCF6; --panel-2: #EFE7D9; --line: #D9CFBF; --line-strong: #17151A;
+  --ink: #121014; --ink-2: #2E2A33; --ink-3: #575160; --accent: #E0402A; --on-accent: #FFFFFF;
+  --p-red: #E0402A; --p-blue: #2747D8; --p-yellow: #F4B000; --p-green: #0FA37F; --p-pink: #D6336C; --p-violet: #6C3FD1;
+  --shadow-ink: #121014; --bg-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); --blob-alpha: 0.9;
+}
+@media (prefers-color-scheme: dark) { :root { color-scheme: dark;
+  --bg: #111014; --panel: #1C1A21; --panel-2: #26232D; --line: #34303D; --line-strong: #F3EEE4;
+  --ink: #F6F1E7; --ink-2: #DCD5C8; --ink-3: #A8A0B3; --accent: #FF6A4D; --on-accent: #111014;
+  --p-red: #FF5A3D; --p-blue: #5B78FF; --p-yellow: #FFC21A; --p-green: #22C79A; --p-pink: #FF4F8B; --p-violet: #9B6BFF;
+  --shadow-ink: #000000; --bg-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.9 0 0 0 0 0.85 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); --blob-alpha: 0.55; } }
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+html, body { overflow-x: clip; }
+body { margin: 0; background-color: var(--bg); background-image: var(--bg-grain); color: var(--ink); font-family: var(--f-body); font-size: 18px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-underline-offset: 3px; }
+p { margin: 0 0 1em; color: var(--ink-2); }
+strong { color: var(--ink); }
+.wrap { max-width: var(--frame); margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+:focus-visible { outline: 3px solid var(--p-blue); outline-offset: 3px; border-radius: 4px; }
+
+/* Paint behind everything */
+#paintbg { position: fixed; inset: -10vh -10vw; z-index: 0; pointer-events: none; overflow: hidden; filter: hue-rotate(calc(var(--sp, 0) * 160deg)); opacity: var(--blob-alpha); }
+#paintbg .lyr { position: absolute; inset: 0; will-change: transform; }
+#paintbg svg { width: 100%; height: 100%; display: block; }
+#paintbg .l1 { animation: drift1 38s ease-in-out infinite alternate; }
+#paintbg .l2 { animation: drift2 52s ease-in-out infinite alternate; }
+@keyframes drift1 { from { translate: -2vw -1vh; rotate: -1.5deg; } to { translate: 3vw 2vh; rotate: 1.5deg; } }
+@keyframes drift2 { from { translate: 2vw 2vh; rotate: 1deg; } to { translate: -3vw -2vh; rotate: -2deg; scale: 1.06; } }
+main, footer { position: relative; z-index: 1; }
+
+/* Header */
+.bar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 2px solid var(--line-strong); }
+.bar-in { display: flex; align-items: center; gap: 14px; min-height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; letter-spacing: -0.02em; margin-right: auto; }
+.brand-mark { width: 28px; height: 11px; border-radius: 3px; background: linear-gradient(90deg, #D9826B, #D8B878, #8FAE8B, #5E9C9A, #6F88B0, #8E80A8, #8C9BB0); filter: url(#impasto); }
+.nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.nav a { font-family: var(--f-mono); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; padding: 7px 10px; border: 2px solid transparent; border-radius: 6px; white-space: nowrap; }
+.nav a:hover { background: var(--p-yellow); color: #121014; border-color: var(--line-strong); }
+@media (max-width: 640px) { .nav .opt { display: none; } }
+
+/* Type */
+h1, h2, h3 { font-family: var(--f-display); color: var(--ink); margin: 0; text-wrap: balance; }
+h1 { font-weight: 800; font-size: clamp(3rem, 8.4vw, 6.6rem); line-height: 0.9; letter-spacing: -0.045em; }
+h1 .hand { font-family: var(--f-hand); font-weight: 400; letter-spacing: 0; color: var(--p-red); display: inline-block; rotate: -5deg; font-size: 1.05em; }
+h2 { font-weight: 800; font-size: clamp(2.1rem, 5vw, 3.5rem); line-height: 0.98; letter-spacing: -0.035em; }
+h3 { font-weight: 700; font-size: 1.3rem; line-height: 1.2; letter-spacing: -0.015em; margin-bottom: 8px; }
+.lede { font-size: clamp(1.12rem, 1.9vw, 1.34rem); font-weight: 500; color: var(--ink-2); max-width: 46ch; margin: 22px 0 0; }
+.kicker { font-family: var(--f-mono); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; }
+.swash { position: relative; isolation: isolate; display: inline-block; padding: 0 0.12em; }
+.swash::before { content: ""; position: absolute; z-index: -1; left: -0.25em; right: -0.35em; top: 52%; bottom: -0.06em; background: var(--pig, var(--p-yellow)); border-radius: 0.4em 0.15em 0.5em 0.2em; rotate: -1.4deg; filter: url(#rough); opacity: 0.85; transform-origin: left; transform: scaleX(var(--sw, 1)); transition: transform 0.9s cubic-bezier(.2,.8,.2,1); }
+
+section { padding-block: 96px 24px; }
+.sec-head { max-width: 62ch; margin-bottom: 36px; }
+.sec-head p { margin-top: 16px; font-size: 1.08rem; }
+
+/* Hero */
+.hero { padding-block: 72px 40px; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr); gap: 48px; align-items: center; }
+.cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; align-items: center; }
+.note { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-3); margin: 14px 0 0; }
+
+/* Store buttons (generic; replace with official badges once the app is listed) */
+.store { display: inline-flex; align-items: center; gap: 12px; min-width: 196px; padding: 10px 18px 10px 14px; background: #0B0A0D; color: #FFFFFF; text-decoration: none; border: 2px solid #0B0A0D; border-radius: 12px; box-shadow: 4px 4px 0 var(--p-pink); transition: translate 0.15s, box-shadow 0.15s; }
+@media (prefers-color-scheme: dark) { .store { border-color: #F3EEE4; } }
+.store:hover { translate: -2px -2px; box-shadow: 6px 6px 0 var(--p-pink); }
+.store:nth-child(2) { box-shadow: 4px 4px 0 var(--p-green); }
+.store:nth-child(2):hover { box-shadow: 6px 6px 0 var(--p-green); }
+.store svg { width: 28px; height: 28px; flex: none; }
+.store span { display: grid; line-height: 1.1; }
+.store small { font-size: 0.68rem; letter-spacing: 0.02em; opacity: 0.85; }
+.store b { font-family: var(--f-body); font-size: 1.2rem; font-weight: 600; color: #FFFFFF; letter-spacing: -0.01em; }
+.store[aria-disabled="true"] { cursor: default; }
+
+/* Phone */
+.phone-wrap { display: grid; justify-items: center; gap: 14px; }
+.phone { position: relative; width: min(320px, 82vw); aspect-ratio: 9 / 19; padding: 12px; background: var(--ink); border: 2px solid var(--line-strong); border-radius: 44px; box-shadow: 10px 10px 0 var(--p-yellow), 10px 10px 0 2px var(--shadow-ink); rotate: 2deg; transition: rotate 0.4s ease; }
+.phone:hover { rotate: 0deg; }
+.screen { position: relative; height: 100%; border-radius: 34px; overflow: hidden; isolation: isolate; background: #D2796A; transition: background-color 0.8s linear; color: #0B0E14; cursor: pointer; }
+.screen::before { content: ""; position: absolute; inset: 0; z-index: -1; background: inherit; filter: url(#impasto); }
+.notch { position: absolute; top: 10px; left: 50%; translate: -50% 0; width: 34%; height: 22px; background: #0B0A0D; border-radius: 12px; z-index: 3; }
+.s-top, .s-bot { position: absolute; left: 18px; right: 18px; display: flex; justify-content: space-between; gap: 8px; font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.04em; z-index: 2; }
+.s-top { top: 44px; } .s-bot { bottom: 34px; flex-direction: column; gap: 2px; }
+.s-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; z-index: 2; }
+.s-note { font-family: var(--f-display); font-weight: 800; font-size: 3.4rem; letter-spacing: -0.03em; line-height: 1; }
+.s-hz { font-family: var(--f-mono); font-size: 0.8rem; margin-top: 6px; }
+.s-tag { display: inline-block; margin: 14px auto 0; font-family: var(--f-mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; background: rgba(11, 10, 13, 0.14); opacity: 0; transition: opacity 0.5s; }
+.s-tag.on { opacity: 1; }
+.s-prog { position: absolute; left: 18px; right: 18px; bottom: 18px; height: 3px; border-radius: 2px; background: rgba(0, 0, 0, 0.18); overflow: hidden; z-index: 2; }
+.s-prog i { display: block; height: 100%; width: 0; background: currentColor; opacity: 0.7; }
+.s-dim { position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity 2s linear; z-index: 1; pointer-events: none; }
+.s-swipe { animation: swipe 0.45s ease-out; }
+@keyframes swipe { from { translate: 0 30px; opacity: 0.2; } to { translate: 0 0; opacity: 1; } }
+.s-hint { position: absolute; right: 16px; top: 50%; translate: 0 -50%; display: grid; gap: 6px; z-index: 2; }
+.s-hint i { width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); display: block; }
+.ph-ctl { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.btn { font-family: var(--f-mono); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 14px; background: var(--panel); color: var(--ink); border: 2px solid var(--line-strong); border-radius: 6px; box-shadow: 3px 3px 0 var(--shadow-ink); cursor: pointer; transition: translate 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { translate: -2px -2px; box-shadow: 5px 5px 0 var(--shadow-ink); animation: wobble 0.5s ease; }
+.btn:active { translate: 2px 2px; box-shadow: 1px 1px 0 var(--shadow-ink); }
+.btn.primary, .btn[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+@keyframes wobble { 0% { rotate: 0deg; } 25% { rotate: -2deg; } 60% { rotate: 1.5deg; } 100% { rotate: 0deg; } }
+.ph-cap { font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink-3); text-align: center; max-width: 34ch; margin: 0; }
+
+/* Cards */
+.card { background: var(--panel); border: 2px solid var(--line-strong); border-radius: 8px; box-shadow: 5px 5px 0 var(--shadow-ink); padding: 22px 22px 20px; transition: rotate 0.35s, translate 0.35s, box-shadow 0.35s; }
+.card:hover { rotate: 0deg !important; translate: -3px -3px; box-shadow: 9px 9px 0 var(--pig, var(--p-red)); }
+.card p:last-child { margin-bottom: 0; }
+.grid-3 { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.grid-2 { display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); align-items: start; }
+.feat .ico { width: 56px; height: 56px; border-radius: 14px; border: 2px solid var(--line-strong); display: grid; place-items: center; margin-bottom: 16px; background: var(--pig); }
+.feat .ico svg { width: 30px; height: 30px; }
+.feat:nth-child(1) { --pig: var(--p-red); rotate: -0.7deg; } .feat:nth-child(2) { --pig: var(--p-blue); rotate: 0.6deg; } .feat:nth-child(3) { --pig: var(--p-green); rotate: -0.4deg; }
+.feat .ico { filter: none; }
+
+/* Steps */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); counter-reset: s; }
+.steps li { position: relative; padding-top: 54px; }
+.steps li::before { counter-increment: s; content: counter(s); position: absolute; top: -6px; left: 18px; font-family: var(--f-hand); font-size: 3.4rem; line-height: 1; color: var(--pig); }
+.steps li:nth-child(1) { --pig: var(--p-red); rotate: 0.5deg; } .steps li:nth-child(2) { --pig: var(--p-blue); rotate: -0.6deg; } .steps li:nth-child(3) { --pig: var(--p-green); rotate: 0.4deg; } .steps li:nth-child(4) { --pig: var(--p-violet); rotate: -0.5deg; }
+
+/* Learning */
+.ml-flow { display: grid; gap: 14px; }
+.ml-step { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 14px; align-items: start; }
+.ml-step .dot { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--line-strong); background: var(--pig); display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; color: #121014; }
+.ml-step:nth-child(1) { --pig: var(--p-yellow); } .ml-step:nth-child(2) { --pig: var(--p-pink); } .ml-step:nth-child(3) { --pig: var(--p-green); } .ml-step:nth-child(4) { --pig: var(--p-blue); }
+.ml-step:nth-child(4) .dot, .ml-step:nth-child(2) .dot { color: #FFFFFF; }
+.ml-step h3 { font-size: 1.15rem; margin: 6px 0 4px; }
+.ml-step p { margin: 0; font-size: 0.98rem; }
+.tape-demo { display: flex; height: 64px; gap: 3px; border-radius: 6px; overflow: hidden; filter: url(#impasto); margin: 6px 0 10px; }
+.tape-demo span { flex: 1; position: relative; transition: flex 0.8s cubic-bezier(.2,.8,.2,1); }
+.tape-demo span.lg { flex: 3; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink-3); }
+.legend i { display: inline-block; width: 22px; height: 10px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; border: 1.5px solid var(--line-strong); }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.chip { font-family: var(--f-mono); font-size: 0.72rem; font-weight: 700; padding: 6px 10px; border: 2px solid var(--line-strong); border-radius: 999px; background: var(--panel); }
+
+/* Research CTA */
+.research { position: relative; padding: 40px clamp(22px, 5vw, 56px); background: var(--ink); color: var(--bg); border: 2px solid var(--line-strong); border-radius: 12px; box-shadow: 10px 10px 0 var(--p-blue); overflow: hidden; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px; align-items: center; }
+.research h2 { color: var(--bg); }
+.research p { color: color-mix(in srgb, var(--bg) 82%, var(--ink)); margin: 14px 0 0; max-width: 56ch; }
+.research .btn { font-size: 0.8rem; padding: 14px 18px; background: var(--p-yellow); color: #121014; border-color: var(--bg); box-shadow: 4px 4px 0 var(--bg); }
+.research::after { content: ""; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px; border-radius: 46% 54% 60% 40%; background: var(--p-red); opacity: 0.85; filter: url(#impasto); z-index: 0; }
+.research > * { position: relative; z-index: 1; }
+@media (max-width: 760px) { .research { grid-template-columns: 1fr; } .hero-grid { grid-template-columns: 1fr; } .phone { rotate: 0deg; } }
+
+footer { border-top: 2px solid var(--line-strong); margin-top: 96px; padding-block: 28px 48px; font-family: var(--f-mono); font-size: 0.72rem; color: var(--ink-3); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
+footer a { color: var(--ink-2); }
+
+/* Reveal */
+.js-rv .rv { opacity: 0; translate: 0 34px; transition: opacity 0.7s ease, translate 0.8s cubic-bezier(.2,.8,.2,1); }
+.js-rv .rv.in { opacity: 1; translate: 0 0; }
+.js-rv .swash { --sw: 0; } .js-rv .in .swash, .js-rv .swash.in { --sw: 1; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; } #paintbg .lyr, .btn:hover { animation: none; }
+  .js-rv .rv { opacity: 1; translate: none; transition: none; } .js-rv .swash { --sw: 1; }
+  .screen, .s-dim { transition: none; } .s-swipe { animation: none; }
+}
+/* Arriving from the cobalt page: the painted cobalt ground covers the demo, then lifts away with a dripping edge */
+.from-cobalt { --drip: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%2014'%20preserveAspectRatio='none'%3E%3Cpath%20d='M0%200H100V0.6Q98.95%200.81%2097.9%200.6Q96.6%200.6%2096.6%201.7C96.6%202%2096.9%201.74%2096.9%202.1C96.9%202.6%2096.5%203%2096%203C95.5%203%2095.1%202.6%2095.1%202.1C95.1%201.74%2095.4%202%2095.4%201.7Q95.4%200.6%2094.1%200.6Q92.95%200.92%2091.8%200.6Q90.5%200.6%2090.5%201.7C90.5%203.16%2090.85%203.5%2090.85%204.35C90.85%204.82%2090.47%205.2%2090%205.2C89.53%205.2%2089.15%204.82%2089.15%204.35C89.15%203.5%2089.5%203.16%2089.5%201.7Q89.5%200.6%2088.2%200.6Q86.88%200.97%2085.55%200.6Q84.25%200.6%2084.25%201.7C84.25%205.52%2084.7%206%2084.7%207.2C84.7%207.86%2084.16%208.4%2083.5%208.4C82.84%208.4%2082.3%207.86%2082.3%207.2C82.3%206%2082.75%205.52%2082.75%201.7Q82.75%200.6%2081.45%200.6Q80.35%201.1%2079.25%200.6Q77.95%200.6%2077.95%201.7C77.95%202.07%2078.22%202.36%2078.22%203.08C78.22%203.48%2077.9%203.8%2077.5%203.8C77.1%203.8%2076.78%203.48%2076.78%203.08C76.78%202.36%2077.05%202.07%2077.05%201.7Q77.05%200.6%2075.75%200.6Q74.72%200.92%2073.7%200.6Q72.4%200.6%2072.4%201.7C72.4%207.32%2072.95%207.9%2072.95%209.35C72.95%2010.15%2072.3%2010.8%2071.5%2010.8C70.7%2010.8%2070.05%2010.15%2070.05%209.35C70.05%207.9%2070.6%207.32%2070.6%201.7Q70.6%200.6%2069.3%200.6Q67.88%201.08%2066.45%200.6Q65.15%200.6%2065.15%201.7C65.15%204.28%2065.55%204.7%2065.55%205.75C65.55%206.33%2065.08%206.8%2064.5%206.8C63.92%206.8%2063.45%206.33%2063.45%205.75C63.45%204.7%2063.85%204.28%2063.85%201.7Q63.85%200.6%2062.55%200.6Q61.38%200.28%2060.2%200.6Q58.9%200.6%2058.9%201.7C58.9%202%2059.1%201.56%2059.1%201.8C59.1%202.13%2058.83%202.4%2058.5%202.4C58.17%202.4%2057.9%202.13%2057.9%201.8C57.9%201.56%2058.1%202%2058.1%201.7Q58.1%200.6%2056.8%200.6Q55.73%200.67%2054.65%200.6Q53.35%200.6%2053.35%201.7C53.35%206.96%2053.85%207.5%2053.85%208.85C53.85%209.6%2053.25%2010.2%2052.5%2010.2C51.75%2010.2%2051.15%209.6%2051.15%208.85C51.15%207.5%2051.65%206.96%2051.65%201.7Q51.65%200.6%2050.35%200.6Q49.08%201.1%2047.8%200.6Q46.5%200.6%2046.5%201.7C46.5%202.68%2046.8%203%2046.8%203.8C46.8%204.24%2046.44%204.6%2046%204.6C45.56%204.6%2045.2%204.24%2045.2%203.8C45.2%203%2045.5%202.68%2045.5%201.7Q45.5%200.6%2044.2%200.6Q42.85%200.83%2041.5%200.6Q40.2%200.6%2040.2%201.7C40.2%204.96%2040.6%205.4%2040.6%206.5C40.6%207.11%2040.11%207.6%2039.5%207.6C38.89%207.6%2038.4%207.11%2038.4%206.5C38.4%205.4%2038.8%204.96%2038.8%201.7Q38.8%200.6%2037.5%200.6Q36.12%201.06%2034.75%200.6Q33.45%200.6%2033.45%201.7C33.45%201.52%2033.7%201.8%2033.7%202.5C33.7%202.89%2033.39%203.2%2033%203.2C32.61%203.2%2032.3%202.89%2032.3%202.5C32.3%201.8%2032.55%201.52%2032.55%201.7Q32.55%200.6%2031.25%200.6Q30.47%200.35%2029.7%200.6Q28.4%200.6%2028.4%201.7C28.4%207.84%2028.9%208.4%2028.9%209.8C28.9%2010.57%2028.27%2011.2%2027.5%2011.2C26.73%2011.2%2026.1%2010.57%2026.1%209.8C26.1%208.4%2026.6%207.84%2026.6%201.7Q26.6%200.6%2025.3%200.6Q23.85%200.67%2022.4%200.6Q21.1%200.6%2021.1%201.7C21.1%203.8%2021.5%204.2%2021.5%205.2C21.5%205.75%2021.05%206.2%2020.5%206.2C19.95%206.2%2019.5%205.75%2019.5%205.2C19.5%204.2%2019.9%203.8%2019.9%201.7Q19.9%200.6%2018.6%200.6Q17.65%200.47%2016.7%200.6Q15.4%200.6%2015.4%201.7C15.4%202%2015.65%201.69%2015.65%201.95C15.65%202.31%2015.36%202.6%2015%202.6C14.64%202.6%2014.35%202.31%2014.35%201.95C14.35%201.69%2014.6%202%2014.6%201.7Q14.6%200.6%2013.3%200.6Q12.2%200.74%2011.1%200.6Q9.8%200.6%209.8%201.7C9.8%206.1%2010.25%206.6%2010.25%207.85C10.25%208.54%209.69%209.1%209%209.1C8.31%209.1%207.75%208.54%207.75%207.85C7.75%206.6%208.2%206.1%208.2%201.7Q8.2%200.6%206.9%200.6Q6.1%200.77%205.3%200.6Q4%200.6%204%201.7C4%201.68%204.3%202%204.3%202.8C4.3%203.24%203.94%203.6%203.5%203.6C3.06%203.6%202.7%203.24%202.7%202.8C2.7%202%203%201.68%203%201.7Q3%200.6%201.7%200.6Q0.85%200.26%200%200.6Z'/%3E%3C/svg%3E"); }
+.from-cobalt body::before { content: ""; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 112vh; pointer-events: none; background-color: #043ECD; background-image: url(../assets/cobalt-ground-2x.webp); background-image: image-set(url(../assets/cobalt-ground-1x.webp) 1x, url(../assets/cobalt-ground-2x.webp) 2x); background-size: 520px 520px; -webkit-mask: linear-gradient(#000, #000) 0 0 / 100% calc(100vh + 2px) no-repeat, var(--drip) 0 100vh / 900px 14vh repeat-x; mask: linear-gradient(#000, #000) 0 0 / 100% calc(100vh + 2px) no-repeat, var(--drip) 0 100vh / 900px 14vh repeat-x; transition: translate 1.05s cubic-bezier(.7, 0, .2, 1); }
+.from-cobalt.lift body::before { translate: 0 -114vh; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="impasto" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.03 0.11" numOctaves="3" seed="7" result="t"/>
+      <feDiffuseLighting in="t" surfaceScale="1.6" lighting-color="#ffffff" result="l"><feDistantLight azimuth="235" elevation="58"/></feDiffuseLighting>
+      <feComposite in="SourceGraphic" in2="l" operator="arithmetic" k1="1.16" k2="0" k3="0" k4="0" result="lit"/>
+      <feDisplacementMap in="lit" in2="t" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="rough" x="-3%" y="-60%" width="106%" height="220%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" seed="3" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="brush" filterUnits="userSpaceOnUse" x="-100" y="-100" width="4000" height="4000">
+      <feTurbulence type="fractalNoise" baseFrequency="0.07" numOctaves="2" seed="5" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+<div id="paintbg" aria-hidden="true">
+  <div class="lyr l1" data-par="0.06"><svg viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice"><g filter="url(#impasto)"><g fill="var(--p-yellow)" opacity=".55"><path d="M324,136 Q360,170 330,207 Q300,245 260,288 Q219,332 163,298 Q106,264 46,243 Q-15,222 -4,173 Q6,123 57,100 Q107,77 161,49 Q215,22 252,62 Q289,102 324,136Z"/></g>
+<g fill="var(--p-blue)" opacity=".42"><path d="M1509,181 Q1506,260 1454,304 Q1402,349 1348,373 Q1293,398 1215,407 Q1138,417 1053,378 Q969,339 1023,275 Q1077,211 1116,168 Q1154,125 1231,91 Q1308,58 1410,80 Q1513,103 1509,181Z"/><rect x="1259" y="330" width="14" height="92" rx="7" fill="var(--p-blue)"/><circle cx="1266" cy="422" r="10" fill="var(--p-blue)"/><rect x="1162" y="330" width="8" height="152" rx="4" fill="var(--p-blue)"/><circle cx="1166" cy="482" r="6" fill="var(--p-blue)"/><rect x="1180" y="330" width="8" height="55" rx="4" fill="var(--p-blue)"/><circle cx="1184" cy="385" r="6" fill="var(--p-blue)"/><rect x="1303" y="330" width="11" height="63" rx="5" fill="var(--p-blue)"/><circle cx="1308" cy="393" r="8" fill="var(--p-blue)"/><rect x="1271" y="330" width="10" height="88" rx="5" fill="var(--p-blue)"/><circle cx="1276" cy="418" r="8" fill="var(--p-blue)"/></g>
+<g fill="var(--p-pink)" opacity=".38"><path d="M1530,855 Q1536,900 1517,937 Q1499,974 1455,1001 Q1410,1028 1335,1041 Q1260,1055 1223,1003 Q1186,952 1194,902 Q1201,852 1234,803 Q1266,754 1341,751 Q1416,747 1470,779 Q1524,810 1530,855Z"/></g>
+<g fill="var(--p-green)" opacity=".36"><path d="M511,929 Q533,1000 495,1062 Q458,1123 376,1132 Q293,1140 217,1147 Q140,1154 90,1107 Q41,1059 17,993 Q-7,928 60,880 Q128,831 211,843 Q294,855 392,856 Q490,857 511,929Z"/><rect x="183" y="1080" width="12" height="94" rx="6" fill="var(--p-green)"/><circle cx="189" cy="1174" r="9" fill="var(--p-green)"/><rect x="189" y="1080" width="6" height="104" rx="3" fill="var(--p-green)"/><circle cx="192" cy="1184" r="5" fill="var(--p-green)"/><rect x="280" y="1080" width="11" height="139" rx="5" fill="var(--p-green)"/><circle cx="285" cy="1219" r="8" fill="var(--p-green)"/><rect x="316" y="1080" width="12" height="81" rx="6" fill="var(--p-green)"/><circle cx="322" cy="1161" r="9" fill="var(--p-green)"/><rect x="267" y="1080" width="10" height="115" rx="5" fill="var(--p-green)"/><circle cx="271" cy="1195" r="7" fill="var(--p-green)"/></g></g></svg></div>
+  <div class="lyr l2" data-par="0.14"><svg viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice"><g filter="url(#rough)"><g fill="var(--p-red)" opacity=".34"><rect x="-80" y="560" width="760" height="70" rx="35" transform="rotate(-9 300.0 595.0)"/><rect x="980" y="640" width="700" height="52" rx="26" transform="rotate(7 1330.0 666.0)"/></g>
+<g fill="var(--p-violet)" opacity=".28"><path d="M1019,77 Q1041,120 1023,165 Q1006,211 946,219 Q885,227 832,226 Q778,225 769,186 Q760,147 731,112 Q702,78 741,47 Q779,16 836,-3 Q894,-23 946,6 Q997,35 1019,77Z"/><rect x="520" y="1080" width="640" height="46" rx="23" transform="rotate(-4 840.0 1103.0)"/></g>
+<g fill="var(--p-yellow)" opacity=".34"><rect x="1100" y="1120" width="520" height="40" rx="20" transform="rotate(-12 1360.0 1140.0)"/></g></g></svg></div>
+</div>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="brand" href="../index.html" aria-label="A Color Company home"><span class="brand-mark" aria-hidden="true"></span>A Color Company</a>
+    <nav class="nav" aria-label="Sections">
+      <a class="opt" href="#what">What it does</a>
+      <a class="opt" href="#how">How to use</a>
+      <a class="opt" href="#learns">How it learns</a>
+      <a href="color-calm/index.html">Research</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="kicker">The app · demo</p>
+      <h1>Scroll your way <span class="hand">to</span> calm.</h1>
+      <p class="lede">A short-video feed where every video carries one color and one tone. Over 15 minutes the colors soften, the notes descend and the sound grows quieter, so the feed that usually winds you up helps you wind down.</p>
+      <div class="cta" role="group" aria-label="Download the app">
+        <a class="store" href="#" aria-disabled="true" aria-label="App Store, coming soon">
+          <svg viewBox="0 0 28 28" aria-hidden="true"><rect x="7" y="2" width="14" height="24" rx="3.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="14" cy="22" r="1.4" fill="#fff"/></svg>
+          <span><small>Coming soon on the</small><b>App Store</b></span>
+        </a>
+        <a class="store" href="#" aria-disabled="true" aria-label="Google Play, coming soon">
+          <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M8 4.5 L22 14 L8 23.5 Z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span><small>Coming soon on</small><b>Google Play</b></span>
+        </a>
+      </div>
+      <p class="note">Not yet in the stores. Try the live preview on the phone.</p>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="screen" id="scr" role="button" tabindex="0" aria-label="Preview feed. Tap or press Enter for the next video.">
+          <span class="notch" aria-hidden="true"></span>
+          <div class="s-top"><span id="sIdx">#1 / 121</span><span id="sTime">0:00</span></div>
+          <div class="s-center" id="sCenter"><span class="s-note" id="sNote">F♯4</span><span class="s-hz" id="sHz">369.99 Hz</span><span class="s-tag" id="sTag">Lingering · breathing</span></div>
+          <div class="s-bot"><span id="sCat">Red · Meet</span><span id="sHex">#D2796A</span></div>
+          <div class="s-prog"><i id="sProg"></i></div>
+          <div class="s-dim" id="sDim" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="ph-ctl">
+        <button class="btn" type="button" id="bPlay" aria-pressed="true">Pause</button>
+        <button class="btn" type="button" id="bSound" aria-pressed="false">Sound off</button>
+        <button class="btn" type="button" id="bNext">Next ↓</button>
+      </div>
+      <p class="ph-cap">Live preview at 3× speed. Every video is drawn fresh, under the same rules as the app.</p>
+    </div>
+  </div>
+</section>
+
+<section id="what">
+  <div class="wrap">
+    <div class="sec-head rv"><h2><span class="swash" style="--pig: var(--p-yellow)">What it does</span></h2>
+      <p>Most feeds keep you alert. This one follows a calm arc in seven stages, built from research on color, sound and breathing.</p></div>
+    <div class="grid-3">
+      <article class="card feat rv">
+        <div class="ico" aria-hidden="true"><svg viewBox="0 0 30 30"><circle cx="11" cy="12" r="7" fill="#fff" opacity=".9"/><circle cx="19" cy="18" r="7" fill="none" stroke="#121014" stroke-width="2.4"/></svg></div>
+        <h3>Color that softens</h3>
+        <p>Each video has its own color. Saturation falls through the session and the palette moves from warm coral and gold to cool teal, blue and lavender. Two videos in a row never share a hue family.</p>
+      </article>
+      <article class="card feat rv">
+        <div class="ico" aria-hidden="true"><svg viewBox="0 0 30 30"><path d="M11 22 V7 L23 5 V19" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><circle cx="8" cy="22" r="3.4" fill="#fff"/><circle cx="20" cy="19" r="3.4" fill="#fff"/></svg></div>
+        <h3>Notes that descend</h3>
+        <p>Each video sounds one note from a consonant five-note scale. Pitch drifts lower, the sound softens by about 14 dB and the session ends on a low, settled home note.</p>
+      </article>
+      <article class="card feat rv">
+        <div class="ico" aria-hidden="true"><svg viewBox="0 0 30 30"><path d="M4 16 C8 8, 12 8, 15 15 S22 22, 26 14" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></div>
+        <h3>A rhythm you can breathe to</h3>
+        <p>Stay on a video and its note starts to breathe with you. Each breath begins at a normal resting pace and lengthens step by step toward six breaths a minute.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head rv"><h2><span class="swash" style="--pig: var(--p-pink)">How to use it</span></h2>
+      <p>No settings to learn. Open it before bed or whenever your mind is racing.</p></div>
+    <ol class="steps">
+      <li class="card rv"><h3>Start a session</h3><p>Press start. A session lasts about 15 minutes, or around 120 short videos at a quick pace.</p></li>
+      <li class="card rv"><h3>Swipe as usual</h3><p>Swipe up for the next video, exactly like any feed. Each one swaps in a new color and note.</p></li>
+      <li class="card rv"><h3>Linger on what feels good</h3><p>Stay on a video and its note keeps breathing. Your screen dims a little as the breaths grow longer.</p></li>
+      <li class="card rv"><h3>Drift off</h3><p>Leave it for three minutes and the app rests. The screen can sleep and any touch wakes it.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="learns">
+  <div class="wrap grid-2">
+    <div>
+      <div class="sec-head rv" style="margin-bottom: 24px;"><h2><span class="swash" style="--pig: var(--p-green)">It learns what calms you</span></h2>
+        <p>A small learning model watches one signal: how long you stay. Every session it gets a little better at showing you the colors and notes you linger on, without ever leaving the calm arc.</p></div>
+      <div class="ml-flow">
+        <div class="ml-step rv"><span class="dot">1</span><div><h3>It notices lingers</h3><p>A video counts as a linger when you stay at least 1.5 times longer than on the videos around it, so later, slower parts of a session are not mistaken for favorites.</p></div></div>
+        <div class="ml-step rv"><span class="dot">2</span><div><h3>It keeps score</h3><p>Every remembered video carries a running score of lingers against skips. The model samples from those scores (Thompson sampling) to decide what comes back.</p></div></div>
+        <div class="ml-step rv"><span class="dot">3</span><div><h3>It explores, too</h3><p>Favorites fill at most a quarter of each stage. The rest is fresh, and colors and notes you liked get a gentle boost in new draws.</p></div></div>
+        <div class="ml-step rv"><span class="dot">4</span><div><h3>It forgets slowly</h3><p>Scores fade by 15% each session, so last month's favorite makes room for tonight's mood.</p></div></div>
+      </div>
+    </div>
+    <div class="card rv" style="--pig: var(--p-green); rotate: 0.5deg;">
+      <p class="kicker" style="margin-bottom: 6px;">Session by session</p>
+      <h3 id="mlTitle">Session 1</h3>
+      <div class="tape-demo" id="mlTape" aria-hidden="true"></div>
+      <div class="legend"><span><i style="background: var(--panel)"></i>Wide tile = a video you lingered on</span></div>
+      <p id="mlTxt" style="margin-top: 14px;">Every color is new. The feed is still guessing.</p>
+      <div class="chips"><span class="chip">Stays inside the calm arc</span><span class="chip">Private to you</span><span class="chip">Learns from time, not taps</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="research rv">
+      <div>
+        <h2>The science behind the calm.</h2>
+        <p>Every rule in the app comes from published research on color, pitch, music and breathing, graded for how well it holds up. The full guide includes the working scroll lab.</p>
+      </div>
+      <a class="btn" href="color-calm/index.html">Read more on the research and methodology →</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap"><span>© 2026 <b style="color: var(--ink-2);">A Color Company</b>. All rights reserved.</span><span><a href="../index.html">Home</a> · <a href="color-calm/index.html">Research</a></span></div>
+</footer>
+
+<script>
+// Calm-scroll sequence generator core (shared by tests and the HTML page)
+(function (root) {
+  'use strict';
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ---------- OKLCH <-> sRGB ----------
+  function oklchToLinear(L, C, hDeg) {
+    const h = hDeg * Math.PI / 180;
+    const a = C * Math.cos(h), b = C * Math.sin(h);
+    const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+    const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+    const s_ = L - 0.0894841775 * a - 1.2914855480 * b;
+    const l = l_ * l_ * l_, m = m_ * m_ * m_, s = s_ * s_ * s_;
+    return [
+      4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+      -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+      -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s
+    ];
+  }
+  const inGamut = (lin) => lin.every(v => v >= -1e-4 && v <= 1 + 1e-4);
+  const enc = (x) => { x = Math.min(1, Math.max(0, x)); return x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055; };
+  const dec = (x) => x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+  function oklchToHex(L, C, h) {
+    return '#' + oklchToLinear(L, C, h).map(v => Math.round(enc(v) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
+  }
+  function hexToOklch(hex) {
+    const n = parseInt(hex.replace('#', ''), 16);
+    const r = dec(((n >> 16) & 255) / 255), g = dec(((n >> 8) & 255) / 255), b = dec((n & 255) / 255);
+    const l = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b;
+    const m = 0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b;
+    const s = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b;
+    const l_ = Math.cbrt(l), m_ = Math.cbrt(m), s_ = Math.cbrt(s);
+    const L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_;
+    const A = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_;
+    const B = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_;
+    let h = Math.atan2(B, A) * 180 / Math.PI; if (h < 0) h += 360;
+    return { L, C: Math.hypot(A, B), h };
+  }
+  function fitChroma(L, C, h) {
+    if (inGamut(oklchToLinear(L, C, h))) return C;
+    let lo = 0, hi = C;
+    for (let i = 0; i < 24; i++) { const mid = (lo + hi) / 2; if (inGamut(oklchToLinear(L, mid, h))) lo = mid; else hi = mid; }
+    return lo;
+  }
+  function okDist(a, b) {
+    const ah = a.h * Math.PI / 180, bh = b.h * Math.PI / 180;
+    const da = a.C * Math.cos(ah) - b.C * Math.cos(bh);
+    const db = a.C * Math.sin(ah) - b.C * Math.sin(bh);
+    return Math.sqrt((a.L - b.L) ** 2 + da * da + db * db);
+  }
+
+  // ---------- Model ----------
+  // Ordered warm to cool so index distance = hue-wheel adjacency.
+  const CATS = [
+    { id: 'RED',    name: 'Red',    h: [22, 32],   dL: -0.02, warm: true },
+    { id: 'ORANGE', name: 'Orange', h: [40, 58],   dL:  0.00, warm: true },
+    { id: 'YELLOW', name: 'Yellow', h: [80, 98],   dL:  0.05, warm: true },
+    { id: 'GREEN',  name: 'Green',  h: [130, 152], dL:  0.01, warm: false },
+    { id: 'TEAL',   name: 'Teal',   h: [182, 202], dL: -0.02, warm: false },
+    { id: 'BLUE',   name: 'Blue',   h: [240, 262], dL: -0.02, warm: false },
+    { id: 'VIOLET', name: 'Violet', h: [290, 310], dL: -0.01, warm: false }
+  ];
+  const CAT_INDEX = Object.fromEntries(CATS.map((c, i) => [c.id, i]));
+
+  // Seven groups (phases) that mirror the report's calming arc.
+  // pool = melody notes (MIDI, high to low) from D-major pentatonic; drone = sustained notes.
+  const PHASES = [
+    { n: 1, name: 'Meet',    cats: { RED: 0.30, ORANGE: 0.45, YELLOW: 0.25 }, pool: [71, 69, 66], drone: [],       L: 0.690 },
+    { n: 2, name: 'Lift',    cats: { ORANGE: 0.30, YELLOW: 0.45, GREEN: 0.25 }, pool: [69, 66, 64], drone: [],     L: 0.700 },
+    { n: 3, name: 'Ground',  cats: { YELLOW: 0.25, GREEN: 0.45, TEAL: 0.30 }, pool: [66, 64, 62], drone: [50],     L: 0.690 },
+    { n: 4, name: 'Deepen',  cats: { GREEN: 0.25, TEAL: 0.45, BLUE: 0.30 }, pool: [64, 62, 59], drone: [50],       L: 0.670 },
+    { n: 5, name: 'Slow',    cats: { TEAL: 0.30, BLUE: 0.45, VIOLET: 0.25 }, pool: [62, 59, 57], drone: [50],      L: 0.655 },
+    { n: 6, name: 'Release', cats: { TEAL: 0.20, BLUE: 0.35, VIOLET: 0.45 }, pool: [59, 57, 54], drone: [50],      L: 0.650 },
+    { n: 7, name: 'Rest',    cats: { TEAL: 0.20, BLUE: 0.50, VIOLET: 0.30 }, pool: [57, 54, 50], drone: [50, 45],  L: 0.670 }
+  ];
+
+  const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
+  const midiName = (m) => NOTE_NAMES[m % 12] + (Math.floor(m / 12) - 1);
+  const midiHz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+
+  const C_START = 0.115, C_END = 0.035;   // chroma falls across the session
+  const GAIN_END_DB = -14;                // about 55 dBA down to about 41 dBA
+
+  function baseL(t) { // piecewise-linear through phase centres
+    const k = PHASES.length, x = t * k - 0.5;
+    if (x <= 0) return PHASES[0].L;
+    if (x >= k - 1) return PHASES[k - 1].L;
+    const i = Math.floor(x), f = x - i;
+    return PHASES[i].L * (1 - f) + PHASES[i + 1].L * f;
+  }
+
+  function pickWeighted(rng, entries) { // entries: [[value, weight], ...]
+    const total = entries.reduce((s, e) => s + e[1], 0);
+    if (total <= 0) return entries[0][0];
+    let r = rng() * total;
+    for (const [v, w] of entries) { if ((r -= w) < 0) return v; }
+    return entries[entries.length - 1][0];
+  }
+
+  function adjacency(prevId, id) {
+    if (!prevId) return 1;
+    const d = Math.abs(CAT_INDEX[prevId] - CAT_INDEX[id]);
+    return d === 0 ? 0 : d === 1 ? 1 : d === 2 ? 0.45 : 0.2;
+  }
+
+  function generate(opts) {
+    const o = Object.assign({ seed: 1, minDwell: 5, maxDwell: 10, totalSec: 900 }, opts || {});
+    const rng = mulberry32(o.seed >>> 0);
+    const bCat = o.bias && o.bias.cat, bNote = o.bias && o.bias.note; // optional learned emphasis (bounded multipliers)
+    const K = PHASES.length, phaseLen = o.totalSec / K;
+    // Optional continuation: keep the videos already watched (head) and plan the rest of the session from t0.
+    const items = o.head ? o.head.slice() : [];
+    o.headLen = items.length;
+    let t = items.length ? (o.t0 || 0) : 0, prev = items[items.length - 1] || null, prev2 = items[items.length - 2] || null;
+
+    while (t < o.totalSec - 1e-9) {
+      let d = o.minDwell + (o.maxDwell - o.minDwell) * rng();
+      if (o.totalSec - (t + d) < o.minDwell * 0.5) d = o.totalSec - t; // no tiny last clip
+      const tn = t / o.totalSec;
+      const pIdx = Math.min(K - 1, Math.floor(t / phaseLen));
+      const ph = PHASES[pIdx];
+      const pProg = (t - pIdx * phaseLen) / phaseLen;
+
+      // 1) hue category: phase weight x wheel adjacency, never the same category twice in a row
+      const cands = Object.entries(ph.cats).map(([id, w]) => {
+        let wt = w * adjacency(prev && prev.cat, id) * (bCat ? bCat(ph.n, id) : 1);
+        if (prev2 && prev2.cat === id) wt *= 0.7; // soften A-B-A-B ping-pong
+        return [id, wt];
+      });
+      const catId = pickWeighted(rng, cands);
+      const cat = CATS[CAT_INDEX[catId]];
+
+      // 2) exact colour inside the category band
+      // best of two hue draws: keep the one nearer the previous hue (smoother swipe-to-swipe change)
+      const h1 = cat.h[0] + (cat.h[1] - cat.h[0]) * rng();
+      const h2 = cat.h[0] + (cat.h[1] - cat.h[0]) * rng();
+      const hd = (x) => prev ? Math.abs(((x - prev.h + 540) % 360) - 180) : 0;
+      const h = hd(h1) <= hd(h2) ? h1 : h2;
+      const Lb = baseL(tn);
+      let L = Lb + cat.dL + (rng() * 2 - 1) * 0.01;
+      L = Math.max(0.60, Math.min(0.80, L));
+      if (prev) L = Math.max(prev.L - 0.06, Math.min(prev.L + 0.06, L));
+      let C = C_START + (C_END - C_START) * tn + (rng() * 2 - 1) * 0.005;
+      C = fitChroma(L, Math.max(0.02, C), h);
+
+      // 3) pitch: lighter colour -> higher note (cross-modal congruence), drifting lower through the group
+      const z = (L - Lb) / 0.03;
+      const cong = z > 0.5 ? 0 : (z < -0.5 ? 2 : 1);
+      const target = cong + 0.6 * (pProg - 0.5);
+      const isLast = (t + d) >= o.totalSec - 1e-9;
+      let midi;
+      const lastTwoSame = items.length >= 2 && items[items.length - 1].midi === items[items.length - 2].midi;
+      const notes = ph.pool.map((m, i) => {
+        let w = Math.exp(-((i - target) ** 2) / (2 * 0.55 * 0.55)) * (bNote ? bNote(ph.n, m) : 1);
+        if (prev && Math.abs(m - prev.midi) > 7) w = 0;
+        if (lastTwoSame && m === prev.midi) w = 0;
+        return [m, w];
+      });
+      if (isLast) {
+        midi = 50; // resolve to the tonic, D3
+        if (prev && Math.abs(midi - prev.midi) > 7) midi = ph.pool.reduce((a, b) => Math.abs(b - prev.midi) < Math.abs(a - prev.midi) ? b : a);
+      } else if (notes.every(e => e[1] === 0)) {
+        midi = ph.pool.reduce((a, b) => Math.abs(b - prev.midi) < Math.abs(a - prev.midi) ? b : a);
+      } else {
+        midi = pickWeighted(rng, notes);
+      }
+
+      const item = {
+        i: items.length + 1, start: t, dwell: d, phase: ph.n, phaseName: ph.name,
+        cat: cat.id, catName: cat.name, L, C, h, hex: oklchToHex(L, C, h),
+        midi, note: midiName(midi), hz: midiHz(midi), drone: ph.drone.slice(),
+        gainDb: GAIN_END_DB * tn, xfade: Math.min(1.5, 0.2 * d)
+      };
+      items.push(item);
+      prev2 = prev; prev = item; t += d;
+    }
+    return { seed: o.seed >>> 0, opts: o, items };
+  }
+
+  function validate(seq) {
+    const it = seq.items, K = PHASES.length;
+    const by = Array.from({ length: K }, () => []);
+    it.forEach(x => by[x.phase - 1].push(x));
+    const mean = (a, f) => a.reduce((s, x) => s + f(x), 0) / Math.max(1, a.length);
+    const chroma = by.map(a => mean(a, x => x.C));
+    const warm = by.map(a => mean(a, x => (CATS[CAT_INDEX[x.cat]].warm ? 1 : 0)));
+    const pitch = by.map(a => mean(a, x => x.midi));
+    let repeats = 0, maxDL = 0, maxDE = 0, maxLeap = 0, gamut = true, minDwell = Infinity;
+    it.forEach((x, k) => {
+      if (!inGamut(oklchToLinear(x.L, x.C, x.h))) gamut = false;
+      if (k < it.length - 1 && k >= (seq.opts.headLen || 0)) minDwell = Math.min(minDwell, x.dwell); // watched videos keep their real dwell
+      if (k > 0) {
+        const p = it[k - 1];
+        if (p.cat === x.cat) repeats++;
+        maxDL = Math.max(maxDL, Math.abs(x.L - p.L));
+        maxDE = Math.max(maxDE, okDist(p, x));
+        maxLeap = Math.max(maxLeap, Math.abs(x.midi - p.midi));
+      }
+    });
+    const strictlyDown = (a) => a.every((v, i) => i === 0 || v < a[i - 1]);
+    const nonIncreasing = (a) => a.every((v, i) => i === 0 || v <= a[i - 1] + 1e-9);
+    const checks = {
+      noRepeat: repeats === 0,
+      chromaFalls: strictlyDown(chroma),
+      warmToCool: nonIncreasing(warm) && warm[0] === 1 && warm[K - 1] === 0,
+      pitchFalls: strictlyDown(pitch),
+      smoothLight: maxDL <= 0.08,
+      inGamut: gamut,
+      slowChanges: minDwell >= seq.opts.minDwell - 1e-9,
+      smallLeaps: maxLeap <= 7,
+      endsOnTonic: it[it.length - 1].midi === 50
+    };
+    return { checks, pass: Object.values(checks).every(Boolean), stats: { n: it.length, repeats, chroma, warm, pitch, maxDL, maxDE, maxLeap, minDwell } };
+  }
+
+  // Draw sequences until one passes every check, so each accepted session is random but on-purpose.
+  function generateValid(opts, maxTries) {
+    const o = Object.assign({ seed: 1 }, opts || {});
+    let seed = o.seed >>> 0, last = null;
+    for (let k = 0; k < (maxTries || 60); k++) {
+      const seq = generate(Object.assign({}, o, { seed: (seed + k) >>> 0 }));
+      const v = validate(seq);
+      seq.validation = v; seq.tries = k + 1; last = seq;
+      if (v.pass) return seq;
+    }
+    return last;
+  }
+
+  const api = { generateValid, mulberry32, oklchToHex, hexToOklch, oklchToLinear, inGamut, fitChroma, okDist, CATS, PHASES, midiName, midiHz, generate, validate };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.CalmGen = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  const G = window.CalmGen, $ = (q) => document.querySelector(q);
+  const reduced = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
+  const root = document.documentElement;
+
+  // Paint parallax and hue drift
+  const lyrs = [...document.querySelectorAll('#paintbg .lyr')]; let tick = false;
+  function onScroll() {
+    if (tick) return; tick = true;
+    requestAnimationFrame(() => { tick = false; const max = Math.max(1, root.scrollHeight - innerHeight), y = scrollY;
+      root.style.setProperty('--sp', (y / max).toFixed(4));
+      if (!reduced) lyrs.forEach(l => { l.style.transform = `translate3d(0, ${(-y * (+l.dataset.par || 0)).toFixed(1)}px, 0)`; }); });
+  }
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  // Reveal on scroll
+  if (!reduced && 'IntersectionObserver' in window) {
+    const els = [...document.querySelectorAll('.rv')];
+    root.classList.add('js-rv');
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    els.forEach((e, i) => { e.style.transitionDelay = (i % 4) * 70 + 'ms'; io.observe(e); });
+  }
+
+  // Live phone preview, drawn from the same generator as the research lab
+  const SPEED = 3;
+  let seq = G.generateValid({ seed: (Math.random() * 4294967296) >>> 0, minDwell: 5, maxDwell: 10, totalSec: 900 });
+  let k = 0, timer = 0, playing = !reduced, t0 = 0, dur = 0, lingering = false, breathT = 0;
+  const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  function show(x, anim) {
+    const scr = $('#scr');
+    scr.style.backgroundColor = x.hex;
+    scr.style.color = x.L > 0.62 ? '#0B0E14' : '#F5F7FB';
+    $('#sIdx').textContent = `#${x.i} / ${seq.items.length}`; $('#sTime').textContent = fmt(x.start);
+    $('#sNote').textContent = x.note; $('#sHz').textContent = `${x.hz.toFixed(2)} Hz`;
+    $('#sCat').textContent = `${x.catName} · ${x.phaseName}`; $('#sHex').textContent = x.hex;
+    $('#sTag').classList.remove('on'); $('#sDim').style.opacity = '0';
+    if (anim && !reduced) { const c = $('#sCenter'); c.classList.remove('s-swipe'); void c.offsetWidth; c.classList.add('s-swipe'); }
+    tone(x);
+  }
+  function step() {
+    clearTimeout(timer);
+    const x = seq.items[k]; show(x, true);
+    // Now and then the preview lingers, so the breathing rhythm is visible.
+    lingering = Math.random() < 0.18;
+    dur = (lingering ? x.dwell + 10 : x.dwell) / SPEED * 1000; t0 = performance.now();
+    if (lingering) setTimeout(() => { if (seq.items[k] === x && playing) { $('#sTag').classList.add('on'); $('#sDim').style.opacity = '0.14'; breathe(x); } }, x.dwell / SPEED * 1000);
+    if (playing) timer = setTimeout(next, dur);
+  }
+  function next() { k = (k + 1) % seq.items.length; if (k === 0) seq = G.generateValid({ seed: (Math.random() * 4294967296) >>> 0, minDwell: 5, maxDwell: 10, totalSec: 900 }); step(); }
+  function prog() { const p = Math.min(1, (performance.now() - t0) / Math.max(1, dur)); $('#sProg').style.width = (playing ? p * 100 : 0) + '%'; requestAnimationFrame(prog); }
+  requestAnimationFrame(prog);
+
+  // Optional sound: one soft tone per video, faded in and out
+  let ctx = null, master = null, voice = null, soundOn = false;
+  function tone(x) {
+    if (!soundOn || !ctx) return;
+    const now = ctx.currentTime;
+    if (voice) { try { voice.g.gain.cancelScheduledValues(now); voice.g.gain.setTargetAtTime(0.0001, now, 0.25); voice.o.stop(now + 1.5); } catch (e) { } }
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine'; o.frequency.value = x.hz; g.gain.value = 0.0001;
+    o.connect(g); g.connect(master); o.start(now);
+    g.gain.setTargetAtTime(0.12 * Math.pow(10, x.gainDb / 20), now, 0.3);
+    voice = { o, g };
+  }
+  function breathe(x) {
+    if (!soundOn || !ctx || !voice) return;
+    const now = ctx.currentTime, peak = 0.12 * Math.pow(10, x.gainDb / 20);
+    for (let i = 0; i < 3; i++) { const t = now + i * 5 / SPEED * 2; voice.g.gain.setTargetAtTime(peak * 0.5, t, 0.5); voice.g.gain.setTargetAtTime(peak, t + 1.2, 0.4); }
+  }
+  $('#bSound').addEventListener('click', () => {
+    soundOn = !soundOn;
+    if (soundOn && !ctx) { try { const AC = window.AudioContext || window.webkitAudioContext; ctx = new AC(); master = ctx.createGain(); master.gain.value = 0.9; const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2400; master.connect(lp); lp.connect(ctx.destination); } catch (e) { soundOn = false; } }
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+    if (soundOn) tone(seq.items[k]); else if (voice && ctx) { voice.g.gain.setTargetAtTime(0.0001, ctx.currentTime, 0.2); }
+    $('#bSound').setAttribute('aria-pressed', String(soundOn)); $('#bSound').textContent = soundOn ? 'Sound on' : 'Sound off';
+  });
+  $('#bPlay').addEventListener('click', () => {
+    playing = !playing; $('#bPlay').setAttribute('aria-pressed', String(playing)); $('#bPlay').textContent = playing ? 'Pause' : 'Play';
+    if (playing) step(); else clearTimeout(timer);
+  });
+  $('#bNext').addEventListener('click', next);
+  $('#scr').addEventListener('click', next);
+  $('#scr').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); next(); } });
+  let ty = null;
+  $('#scr').addEventListener('touchstart', (e) => { ty = e.touches[0].clientY; }, { passive: true });
+  $('#scr').addEventListener('touchend', (e) => { if (ty != null && ty - e.changedTouches[0].clientY > 30) next(); ty = null; }, { passive: true });
+  $('#bPlay').setAttribute('aria-pressed', String(playing)); $('#bPlay').textContent = playing ? 'Pause' : 'Play';
+  step();
+
+  // Learning illustration: lingered colors come back more often, session by session
+  const pal = ['#D9826B', '#D8B878', '#8FAE8B', '#5E9C9A', '#6F88B0', '#8E80A8', '#8C9BB0', '#C99A7A', '#A9B98F', '#7FA6B5', '#9C92C0', '#B7A08A'];
+  const fav = ['#5E9C9A', '#8E80A8'];
+  const stories = [
+    'Every color is new. The feed is still guessing.',
+    'You lingered on teal and lavender. A few of them come back.',
+    'Teal and lavender now return more often, with fresh colors in between.',
+    'Favorites stay capped at a quarter, so there is always something new.'
+  ];
+  let sess = 0;
+  function drawTape() {
+    const tape = $('#mlTape'); tape.innerHTML = '';
+    const share = [0, 0.2, 0.32, 0.25][sess];
+    for (let i = 0; i < 18; i++) {
+      const isFav = Math.random() < share, c = isFav ? fav[Math.floor(Math.random() * 2)] : pal[Math.floor(Math.random() * pal.length)];
+      const sp = document.createElement('span'); sp.style.background = c;
+      if (fav.includes(c) && Math.random() < 0.7) sp.className = 'lg';
+      tape.append(sp);
+    }
+    $('#mlTitle').textContent = `Session ${sess + 1}`; $('#mlTxt').textContent = stories[sess];
+  }
+  drawTape();
+  if (!reduced) setInterval(() => { sess = (sess + 1) % 4; drawTape(); }, 3200);
+})();
+</script>
+<script>
+// Arriving from the cobalt page: once the demo has painted, lift the cobalt ground away
+(function () {
+  const r = document.documentElement;
+  if (!r.classList.contains('from-cobalt')) return;
+  try { history.replaceState(history.state, '', location.href.replace(/([?&])from=cobalt(?=&|#|$)&?/, '$1').replace(/[?&](?=#|$)/, '')); } catch (e) { }
+  let lifted = false;
+  function lift() {
+    if (lifted) return;
+    lifted = true;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      r.classList.add('lift');
+      setTimeout(() => r.classList.remove('from-cobalt', 'lift'), 1200);
+    }));
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(lift, 60));
+  setTimeout(lift, 450);
+})();
+</script>
+</body>
+</html>
