@@ -541,6 +541,12 @@ ol.refs li:target { background: color-mix(in srgb, var(--p-yellow) 35%, transpar
   .chart svg :is(rect, circle, polyline, line, path) { filter: none; }
 }
 .phone.fs { box-shadow: none; background-image: none; border-radius: 0; border: 0; }
+/* 7.5 Day and night: one session's group colors by day and by night */
+.dn-rows { display: grid; gap: 12px; }
+.dn-row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; }
+.dn-row > span { font-family: var(--f-mono); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.dn-arc { display: flex; height: 54px; gap: 1px; border-radius: 6px; overflow: hidden; background: var(--bg); }
+.dn-arc span { flex: 1; }
 </style>
 </head><body>
 
@@ -609,7 +615,7 @@ ol.refs li:target { background: color-mix(in srgb, var(--p-yellow) 35%, transpar
       </article>
       <article>
         <h3><span class="k">02</span>A calming sequence</h3>
-        <p>Seven steps that never repeat a hue category back to back: muted coral, soft gold, sage, muted teal, dusty blue, lavender-grey and misty blue-grey. Chroma falls at each step and lightness stays moderate. Each color holds for 60 to 90 seconds with a 10 to 20 second crossfade in OKLCH, paced to about 6 breaths per minute. Evening room lighting stays dim and leaves out blue and teal light.</p>
+        <p>Seven steps that never repeat a hue category back to back: muted coral, soft gold, sage, muted teal, dusty blue, lavender-grey and misty blue-grey. Chroma falls at each step and lightness stays moderate. Each color holds for 60 to 90 seconds with a 10 to 20 second crossfade in OKLCH, paced to about 6 breaths per minute. Evening room lighting, and the app's night colors, stay dim and leave out blue and teal light.</p>
       </article>
       <article>
         <h3><span class="k">03</span>Pitch and calm</h3>
@@ -806,7 +812,7 @@ ol.refs li:target { background: color-mix(in srgb, var(--p-yellow) 35%, transpar
     <div class="sub">
       <div class="sec-head" style="margin-bottom: 18px;">
         <h3 style="margin: 0;">2.5 Sequence B · Evening ambient lighting</h3>
-        <p class="muted" style="margin: 0;">The same logic with blue and cyan light removed and progressive dimming. Tiles fade toward the page background to show relative intensity; on-screen colors only approximate LED output.</p>
+        <p class="muted" style="margin: 0;">The same logic with blue and cyan light removed and progressive dimming. Tiles fade toward the page background to show relative intensity; on-screen colors only approximate LED output. The app uses this sequence for its night colors (7.5).</p>
       </div>
       <figure class="fig panel" style="margin: 0;">
         <div class="strip-wrap"><div class="strip" id="stripB"></div></div>
@@ -1151,7 +1157,7 @@ ol.refs li:target { background: color-mix(in srgb, var(--p-yellow) 35%, transpar
         </div>
         <div class="panel">
           <h4>Where the memory lives</h4>
-          <p class="muted" style="margin: 0;">Remembered pages stay private to you. They are saved to your claude.ai account when your access to this page allows it, otherwise in this browser. Remembered pages return in their original group, so every new loop still follows the calm arc.</p>
+          <p class="muted" style="margin: 0;">Remembered pages stay private to you and are saved in this browser. Remembered pages return in their original group, so every new loop still follows the calm arc.</p>
         </div>
       </div>
     </div>
@@ -1197,6 +1203,33 @@ ol.refs li:target { background: color-mix(in srgb, var(--p-yellow) 35%, transpar
             <thead><tr><th class="num">Breath</th><th class="num">Elapsed</th><th class="num">Length</th><th class="num">Per min</th><th class="num">In / out</th></tr></thead>
             <tbody id="tblLinger"></tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sec-head" style="margin-bottom: 18px;">
+        <h3 style="margin: 0;">7.5 Day and night</h3>
+        <p class="muted prose" style="margin: 0;">At night the app trades the screen colors of Sequence A for the evening colors of Sequence B (2.5). A sideways swipe switches: right for night, left for day. Everything else in a session stays as it is.</p>
+      </div>
+      <div class="grid-2">
+        <div class="prose">
+          <p>Each video keeps its group, note, timing and place in the session; only its color changes. It takes its group's Sequence B color, turned by up to 6° of hue according to where its day color sits in its hue family, so neighboring videos still differ a little.</p>
+          <p>Dimming replaces falling chroma as the main lever. Each group's color is dimmed to its Sequence B intensity, from 1.00 for warm white to 0.05 for the deep red night-light, and the session follows one luminance curve through those levels, stepping geometrically from one group's center to the next. The curve never rises, so no video is brighter than the one before it. Dimming scales the light itself, which keeps the hue and lowers OKLCH lightness and chroma by the cube root of the dimming factor.</p>
+          <p>No hue from 160° to 300°, teal and cyan through blue, appears at night. Text keeps a contrast of at least 4.5 : 1 and turns light on the darker videos. The sound, the pace fit, the linger rhythm and the learning loop work the same by day and by night, and the app notes which videos were seen in night colors.</p>
+        </div>
+        <div class="stack">
+          <figure class="panel fig" style="margin: 0;">
+            <div class="dn-rows" role="img" aria-label="Seven group colors by day, from coral to misty blue-grey, and by night, from warm white to a deep red night-light.">
+              <div class="dn-row"><span>Day</span><div class="dn-arc"><span style="background: #D2865C"></span><span style="background: #B79B53"></span><span style="background: #7EA976"></span><span style="background: #59A4A1"></span><span style="background: #7494B7"></span><span style="background: #9488AB"></span><span style="background: #8398AE"></span></div></div>
+              <div class="dn-row"><span>Night</span><div class="dn-arc"><span style="background: #FFD6A5"></span><span style="background: #DA9226"></span><span style="background: #C36A61"></span><span style="background: #978237"></span><span style="background: #5A713A"></span><span style="background: #6C4A29"></span><span style="background: #380604"></span></div></div>
+            </div>
+            <figcaption class="cap"><b>FIG 7.3 · One session by day and by night.</b> Each tile is one group at its center: by day the calm arc, by night Sequence B dimmed along the session's curve, from warm white to a deep red night-light. Confidence: moderate for keeping short-wavelength light out and dimming before sleep, from studies of light exposure<sup class="fn"><a href="#ref-30">30</a></sup>; low for how much a phone screen's colors change that response.</figcaption>
+          </figure>
+          <div class="callout">
+            <h4>How people find it</h4>
+            <p>Faint arrows at the left and right edges show the swipe and fade out once it has been used, and a short notice names the mode as it changes. The choice carries over to the next session and can also be set in Settings. The Done for now screen explains both modes.</p>
+          </div>
         </div>
       </div>
     </div>

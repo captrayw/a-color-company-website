@@ -111,6 +111,14 @@ section { padding-block: 96px 24px; }
 @keyframes swipe { from { translate: 0 30px; opacity: 0.2; } to { translate: 0 0; opacity: 1; } }
 .s-hint { position: absolute; right: 16px; top: 50%; translate: 0 -50%; display: grid; gap: 6px; z-index: 2; }
 .s-hint i { width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); display: block; }
+/* Day and night, as in the app: a notice that names the mode and fades, and faint side arrows until first used */
+.s-notice { position: absolute; left: 50%; top: 74px; translate: -50% 0; z-index: 3; padding: 7px 12px; border-radius: 999px; background: rgba(5, 7, 12, 0.72); color: #F6F1E7; font-family: var(--f-mono); font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; opacity: 0; pointer-events: none; }
+.s-notice.on { animation: notice 1.6s ease-out forwards; }
+@keyframes notice { 0% { opacity: 0; } 12%, 62% { opacity: 1; } 100% { opacity: 0; } }
+.s-side { position: absolute; top: 50%; translate: 0 -50%; z-index: 3; display: grid; place-items: center; width: 34px; height: 44px; opacity: 0.45; transition: opacity 0.4s ease; }
+.s-side svg { width: 20px; height: 20px; }
+.s-day { left: 4px; } .s-night { right: 4px; }
+.sides-used .s-side { opacity: 0; pointer-events: none; }
 .ph-ctl { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .btn { font-family: var(--f-mono); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 10px 14px; background: var(--panel); color: var(--ink); border: 2px solid var(--line-strong); border-radius: 6px; box-shadow: 3px 3px 0 var(--shadow-ink); cursor: pointer; transition: translate 0.15s, box-shadow 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
 .btn:hover { translate: -2px -2px; box-shadow: 5px 5px 0 var(--shadow-ink); animation: wobble 0.5s ease; }
@@ -135,6 +143,15 @@ section { padding-block: 96px 24px; }
 .steps li { position: relative; padding-top: 54px; }
 .steps li::before { counter-increment: s; content: counter(s); position: absolute; top: -6px; left: 18px; font-family: var(--f-hand); font-size: 3.4rem; line-height: 1; color: var(--pig); }
 .steps li:nth-child(1) { --pig: var(--p-red); rotate: 0.5deg; } .steps li:nth-child(2) { --pig: var(--p-blue); rotate: -0.6deg; } .steps li:nth-child(3) { --pig: var(--p-green); rotate: 0.4deg; } .steps li:nth-child(4) { --pig: var(--p-violet); rotate: -0.5deg; }
+
+/* Day and night */
+.daynight { --pig: var(--p-yellow); rotate: 0.3deg; margin-top: 26px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 28px; align-items: center; }
+.dn-arcs { display: grid; gap: 14px; }
+.dn-row { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 12px; align-items: center; }
+.dn-lbl { font-family: var(--f-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.dn-arc { display: flex; height: 46px; gap: 3px; border-radius: 6px; overflow: hidden; filter: url(#impasto); }
+.dn-arc span { flex: 1; }
+@media (max-width: 760px) { .daynight { grid-template-columns: 1fr; } }
 
 /* Learning */
 .ml-flow { display: grid; gap: 14px; }
@@ -242,8 +259,11 @@ footer a { color: var(--ink-2); }
     </div>
     <div class="phone-wrap">
       <div class="phone">
-        <div class="screen" id="scr" role="button" tabindex="0" aria-label="Preview feed. Tap or press Enter for the next video.">
+        <div class="screen" id="scr" role="button" tabindex="0" aria-label="Preview feed. Tap or press Enter for the next video. Press the right arrow key for night colors and the left arrow key for day.">
           <span class="notch" aria-hidden="true"></span>
+          <span class="s-notice" id="sNotice" aria-live="polite"></span>
+          <span class="s-side s-day" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="s-side s-night" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <div class="s-top"><span id="sIdx">#1 / 121</span><span id="sTime">0:00</span></div>
           <div class="s-center" id="sCenter"><span class="s-note" id="sNote">F♯4</span><span class="s-hz" id="sHz">369.99 Hz</span><span class="s-tag" id="sTag">Lingering · breathing</span></div>
           <div class="s-bot"><span id="sCat">Red · Meet</span><span id="sHex">#D2796A</span></div>
@@ -254,9 +274,10 @@ footer a { color: var(--ink-2); }
       <div class="ph-ctl">
         <button class="btn" type="button" id="bPlay" aria-pressed="true">Pause</button>
         <button class="btn" type="button" id="bSound" aria-pressed="false">Sound off</button>
+        <button class="btn" type="button" id="bNight" aria-pressed="false">Night</button>
         <button class="btn" type="button" id="bNext">Next ↓</button>
       </div>
-      <p class="ph-cap">Live preview at 3× speed. Every video is drawn fresh, under the same rules as the app.</p>
+      <p class="ph-cap">Live preview at 3× speed. Every video is drawn fresh, under the same rules as the app. Swipe sideways or press Night for the night colors.</p>
     </div>
   </div>
 </section>
@@ -269,7 +290,7 @@ footer a { color: var(--ink-2); }
       <article class="card feat rv">
         <div class="ico" aria-hidden="true"><svg viewBox="0 0 30 30"><circle cx="11" cy="12" r="7" fill="#fff" opacity=".9"/><circle cx="19" cy="18" r="7" fill="none" stroke="#121014" stroke-width="2.4"/></svg></div>
         <h3>Color that softens</h3>
-        <p>Each video has its own color. Saturation falls through the session and the palette moves from warm coral and gold to cool teal, blue and lavender. Two videos in a row never share a hue family.</p>
+        <p>Each video has its own color. Saturation falls through the session and the palette moves from warm coral and gold to cool teal, blue and lavender. Two videos in a row never share a hue family. At night, a sideways swipe turns the palette warm and dim, with no blue.</p>
       </article>
       <article class="card feat rv">
         <div class="ico" aria-hidden="true"><svg viewBox="0 0 30 30"><path d="M11 22 V7 L23 5 V19" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"/><circle cx="8" cy="22" r="3.4" fill="#fff"/><circle cx="20" cy="19" r="3.4" fill="#fff"/></svg></div>
@@ -290,11 +311,22 @@ footer a { color: var(--ink-2); }
     <div class="sec-head rv"><h2><span class="swash" style="--pig: var(--p-pink)">How to use it</span></h2>
       <p>No settings to learn. Open it before bed or whenever your mind is racing.</p></div>
     <ol class="steps">
-      <li class="card rv"><h3>Start a session</h3><p>Press start. A session lasts about 15 minutes, or around 120 short videos at a quick pace.</p></li>
+      <li class="card rv"><h3>Open it</h3><p>The feed starts as soon as the app opens, and the sound starts with your first touch. A session lasts about 15 minutes, or around 120 short videos at a quick pace.</p></li>
       <li class="card rv"><h3>Swipe as usual</h3><p>Swipe up for the next video, exactly like any feed. Each one swaps in a new color and note.</p></li>
       <li class="card rv"><h3>Linger on what feels good</h3><p>Stay on a video and its note keeps breathing. Your screen dims a little as the breaths grow longer.</p></li>
       <li class="card rv"><h3>Drift off</h3><p>Leave it for three minutes and the app rests. The screen can sleep and any touch wakes it.</p></li>
     </ol>
+    <div class="card daynight rv">
+      <div class="dn-arcs" role="img" aria-label="The calm arc in day colors, from coral to misty blue-grey, and in night colors, from warm white to a deep red night-light.">
+        <div class="dn-row"><span class="dn-lbl">Day</span><div class="dn-arc"><span style="background: #D2865C"></span><span style="background: #B79B53"></span><span style="background: #7EA976"></span><span style="background: #59A4A1"></span><span style="background: #7494B7"></span><span style="background: #9488AB"></span><span style="background: #8398AE"></span></div></div>
+        <div class="dn-row"><span class="dn-lbl">Night</span><div class="dn-arc"><span style="background: #FFD6A5"></span><span style="background: #DA9226"></span><span style="background: #C36A61"></span><span style="background: #978237"></span><span style="background: #5A713A"></span><span style="background: #6C4A29"></span><span style="background: #380604"></span></div></div>
+      </div>
+      <div>
+        <h3>Day and night</h3>
+        <p>At night, swipe right. The colors turn warm and dim, with no blue, and grow a little darker with every video. Swipe left to bring the day colors back. Faint arrows at the edges show the way until you have used them, a short note names the mode, and the app keeps your choice for next time. The sound stays the same.</p>
+        <p>Try it on the phone above: swipe sideways, press ← or →, or tap Night.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -608,15 +640,47 @@ footer a { color: var(--ink-2); }
   // Live phone preview, drawn from the same generator as the research lab
   const SPEED = 3;
   let seq = G.generateValid({ seed: (Math.random() * 4294967296) >>> 0, minDwell: 5, maxDwell: 10, totalSec: 900 });
-  let k = 0, timer = 0, playing = !reduced, t0 = 0, dur = 0, lingering = false, breathT = 0;
+  let k = 0, timer = 0, playing = !reduced, t0 = 0, dur = 0, lingering = false, breathT = 0, night = false;
   const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+  // Night colors, as in the app: each group's Sequence B color, shifted up to 6° by where the day
+  // color sits in its hue family, then dimmed along one curve for the session that never brightens.
+  const EVENING = [['Warm white', '#FFD6A5', 1], ['Amber', '#FFAC2E', 0.7], ['Soft rose', '#FF8C80', 0.55], ['Pale gold', '#F4D35E', 0.4], ['Dim sage', '#ACD472', 0.25], ['Very warm white', '#FFB46B', 0.15], ['Deep red', '#E5382E', 0.05]];
+  const lum = (v) => 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  function nightStep(g, shift) {
+    const b = G.hexToOklch(EVENING[g][1]), h = (b.h + 6 * shift + 360) % 360, C = G.fitChroma(b.L, b.C, h);
+    return { L: b.L, C, h, y: lum(G.oklchToLinear(b.L, C, h)) };
+  }
+  const NIGHT_Y = (() => { let floor = Infinity; return EVENING.map((e, g) => { let d = Infinity; for (let s = -1; s <= 1.0001; s += 1 / 12) d = Math.min(d, nightStep(g, s).y); return (floor = Math.min(floor, d * e[2])); }); })();
+  function nightY(tn) {
+    const x = Math.min(1, Math.max(0, tn)) * 7 - 0.5;
+    if (x <= 0) return NIGHT_Y[0];
+    if (x >= 6) return NIGHT_Y[6];
+    const g = Math.floor(x), f = x - g;
+    return NIGHT_Y[g] ** (1 - f) * NIGHT_Y[g + 1] ** f;
+  }
+  function nightColor(x) {
+    const band = G.CATS.find((c) => c.id === x.cat).h, half = (band[1] - band[0]) / 2;
+    let d = ((((x.h - band[0] - half) % 360) + 540) % 360) - 180; if (d === -180) d = 180;
+    const st = nightStep(x.phase - 1, Math.max(-1, Math.min(1, d / half))), s = Math.cbrt(nightY(x.start / 900) / st.y);
+    return { hex: G.oklchToHex(st.L * s, st.C * s, st.h), name: EVENING[x.phase - 1][0] };
+  }
+  // Text keeps 4.5 : 1 on every night color: the dark ink, else the light ink, else black or white.
+  const relLum = (hex) => { const n = parseInt(hex.slice(1), 16); return lum([n >> 16, (n >> 8) & 255, n & 255].map((c) => (c /= 255) <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)); };
+  const contrast = (a, b) => { const x = relLum(a), y = relLum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+  const inkOn = (hex) => contrast(hex, '#0B0E14') >= 4.5 ? '#0B0E14' : contrast(hex, '#F6F1E7') >= 4.5 ? '#F6F1E7' : contrast(hex, '#000000') >= contrast(hex, '#FFFFFF') ? '#000000' : '#FFFFFF';
+
+  // The video's color by day or by night, with its name and hex.
+  function paint(x) {
+    const scr = $('#scr'), c = night ? nightColor(x) : null;
+    scr.style.backgroundColor = c ? c.hex : x.hex;
+    scr.style.color = c ? inkOn(c.hex) : x.L > 0.62 ? '#0B0E14' : '#F5F7FB';
+    $('#sCat').textContent = `${c ? c.name : x.catName} · ${x.phaseName}`; $('#sHex').textContent = c ? c.hex : x.hex;
+  }
   function show(x, anim) {
-    const scr = $('#scr');
-    scr.style.backgroundColor = x.hex;
-    scr.style.color = x.L > 0.62 ? '#0B0E14' : '#F5F7FB';
+    paint(x);
     $('#sIdx').textContent = `#${x.i} / ${seq.items.length}`; $('#sTime').textContent = fmt(x.start);
     $('#sNote').textContent = x.note; $('#sHz').textContent = `${x.hz.toFixed(2)} Hz`;
-    $('#sCat').textContent = `${x.catName} · ${x.phaseName}`; $('#sHex').textContent = x.hex;
     $('#sTag').classList.remove('on'); $('#sDim').style.opacity = '0';
     if (anim && !reduced) { const c = $('#sCenter'); c.classList.remove('s-swipe'); void c.offsetWidth; c.classList.add('s-swipe'); }
     tone(x);
@@ -662,12 +726,30 @@ footer a { color: var(--ink-2); }
     playing = !playing; $('#bPlay').setAttribute('aria-pressed', String(playing)); $('#bPlay').textContent = playing ? 'Pause' : 'Play';
     if (playing) step(); else clearTimeout(timer);
   });
+  // Day and night, as in the app: swipe right or press → for night, swipe left or press ← for day.
+  // A short notice names the mode, and the side arrows fade out once they have been used.
+  function setNight(on) {
+    night = on; paint(seq.items[k]);
+    $('#bNight').setAttribute('aria-pressed', String(on)); $('#scr').classList.add('sides-used');
+    const n = $('#sNotice'); n.textContent = on ? 'Night mode' : 'Day mode'; n.classList.remove('on'); void n.offsetWidth; n.classList.add('on');
+  }
   $('#bNext').addEventListener('click', next);
-  $('#scr').addEventListener('click', next);
-  $('#scr').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); next(); } });
-  let ty = null;
-  $('#scr').addEventListener('touchstart', (e) => { ty = e.touches[0].clientY; }, { passive: true });
-  $('#scr').addEventListener('touchend', (e) => { if (ty != null && ty - e.changedTouches[0].clientY > 30) next(); ty = null; }, { passive: true });
+  $('#bNight').addEventListener('click', () => setNight(!night));
+  // A tap on a side arrow switches day and night; a tap anywhere else moves on.
+  $('#scr').addEventListener('click', (e) => { const side = e.target.closest('.s-side'); if (side) setNight(side.classList.contains('s-night')); else next(); });
+  $('#scr').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); setNight(e.key === 'ArrowRight'); }
+  });
+  // A swipe up moves on; a swipe mostly sideways, as in the app, switches day and night.
+  let tx = null, ty = null;
+  $('#scr').addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  $('#scr').addEventListener('touchend', (e) => {
+    if (ty == null) return;
+    const dx = e.changedTouches[0].clientX - tx, dy = ty - e.changedTouches[0].clientY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > 1.5 * Math.abs(dy)) setNight(dx > 0); else if (dy > 30) next();
+    tx = ty = null;
+  }, { passive: true });
   $('#bPlay').setAttribute('aria-pressed', String(playing)); $('#bPlay').textContent = playing ? 'Pause' : 'Play';
   step();
 
