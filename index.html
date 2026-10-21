@@ -131,6 +131,10 @@ a{color:inherit}
 .mark .dot{animation-delay:.3s,.3s}
 .legal{font:400 13px/1.4 var(--mono);color:var(--ink-soft)}
 
+/* inquiries: a small note in the corner, on both pages */
+.contact{position:fixed;z-index:50;right:var(--gr);bottom:calc(18px + env(safe-area-inset-bottom,0px));padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--canvas) 86%,transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font:400 13px/1.2 var(--mono);color:var(--ink);text-decoration:none;animation:fade .9s cubic-bezier(.16,1,.3,1) 2.6s both;transition:color .25s ease}
+.contact:hover{color:var(--cobalt)}
+
 /* the note shown for colors that are not open yet */
 .toast-dock{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;justify-content:center;box-sizing:border-box;padding-block:0 calc(24px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
 /* always one line: --fit shrinks the whole note, type and paint together, until it fits the screen */
@@ -157,11 +161,13 @@ a{color:inherit}
   .sw{translate:var(--offx) 0}
   .sw.drip::before,.sw.drip::after{display:none}
   .sw-lbl,.sw-tag{display:none}
-  .pal-title{font-size:15vw;top:5vh}
+  .pal-title{font-size:15vw;top:max(5vh,46px)}
   .readout{display:none}
   .sp1{width:72vw;right:-24vw;top:-9vh}
   .sp2{width:62vw;right:-16vw;bottom:-16vh}
   .sp3{width:40vw;left:52vw;top:-6vh}
+  /* on a phone the footer spans the bottom, so the note moves to the top corner, just above the palette title */
+  .contact{top:calc(10px + env(safe-area-inset-top,0px));bottom:auto;padding:5px 10px;font-size:12px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -215,6 +221,8 @@ a{color:inherit}
 </section>
 
 </main>
+
+<a class="contact" href="mailto:info@acolorcompany.com">info@acolorcompany.com</a>
 
 <div class="toast-dock" aria-live="polite">
 <div class="toast" id="toast" hidden>
