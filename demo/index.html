@@ -38,14 +38,10 @@ strong { color: var(--ink); }
 .wrap { max-width: var(--frame); margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
 :focus-visible { outline: 3px solid var(--p-blue); outline-offset: 3px; border-radius: 4px; }
 
-/* Paint behind everything */
+/* Paint behind everything. It holds still: moving it made the browser redraw its filtered texture, up to a second at a time on high-resolution screens. */
 #paintbg { position: fixed; inset: -10vh -10vw; z-index: 0; pointer-events: none; overflow: hidden; filter: hue-rotate(calc(var(--sp, 0) * 160deg)); opacity: var(--blob-alpha); }
 #paintbg .lyr { position: absolute; inset: 0; will-change: transform; }
 #paintbg svg { width: 100%; height: 100%; display: block; }
-#paintbg .l1 { animation: drift1 38s ease-in-out infinite alternate; }
-#paintbg .l2 { animation: drift2 52s ease-in-out infinite alternate; }
-@keyframes drift1 { from { translate: -2vw -1vh; rotate: -1.5deg; } to { translate: 3vw 2vh; rotate: 1.5deg; } }
-@keyframes drift2 { from { translate: 2vw 2vh; rotate: 1deg; } to { translate: -3vw -2vh; rotate: -2deg; scale: 1.06; } }
 main, footer { position: relative; z-index: 1; }
 
 /* Header */
@@ -106,7 +102,7 @@ section { padding-block: 96px 24px; }
 .s-tag { display: inline-block; margin: 14px auto 0; font-family: var(--f-mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; background: rgba(11, 10, 13, 0.14); opacity: 0; transition: opacity 0.5s; }
 .s-tag.on { opacity: 1; }
 .s-prog { position: absolute; left: 18px; right: 18px; bottom: 18px; height: 3px; border-radius: 2px; background: rgba(0, 0, 0, 0.18); overflow: hidden; z-index: 2; }
-.s-prog i { display: block; height: 100%; width: 0; background: currentColor; opacity: 0.7; }
+.s-prog i { display: block; height: 100%; background: currentColor; opacity: 0.7; transform: scaleX(0); transform-origin: left; will-change: transform; }
 .s-dim { position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity 2s linear; z-index: 1; pointer-events: none; }
 .s-swipe { animation: swipe 0.45s ease-out; }
 @keyframes swipe { from { translate: 0 30px; opacity: 0.2; } to { translate: 0 0; opacity: 1; } }
@@ -218,11 +214,11 @@ footer a { color: var(--ink-2); }
   </defs>
 </svg>
 <div id="paintbg" aria-hidden="true">
-  <div class="lyr l1" data-par="0.06"><svg viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice"><g filter="url(#impasto)"><g fill="var(--p-yellow)" opacity=".55"><path d="M324,136 Q360,170 330,207 Q300,245 260,288 Q219,332 163,298 Q106,264 46,243 Q-15,222 -4,173 Q6,123 57,100 Q107,77 161,49 Q215,22 252,62 Q289,102 324,136Z"/></g>
+  <div class="lyr l1"><svg viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice"><g filter="url(#impasto)"><g fill="var(--p-yellow)" opacity=".55"><path d="M324,136 Q360,170 330,207 Q300,245 260,288 Q219,332 163,298 Q106,264 46,243 Q-15,222 -4,173 Q6,123 57,100 Q107,77 161,49 Q215,22 252,62 Q289,102 324,136Z"/></g>
 <g fill="var(--p-blue)" opacity=".42"><path d="M1509,181 Q1506,260 1454,304 Q1402,349 1348,373 Q1293,398 1215,407 Q1138,417 1053,378 Q969,339 1023,275 Q1077,211 1116,168 Q1154,125 1231,91 Q1308,58 1410,80 Q1513,103 1509,181Z"/><rect x="1259" y="330" width="14" height="92" rx="7" fill="var(--p-blue)"/><circle cx="1266" cy="422" r="10" fill="var(--p-blue)"/><rect x="1162" y="330" width="8" height="152" rx="4" fill="var(--p-blue)"/><circle cx="1166" cy="482" r="6" fill="var(--p-blue)"/><rect x="1180" y="330" width="8" height="55" rx="4" fill="var(--p-blue)"/><circle cx="1184" cy="385" r="6" fill="var(--p-blue)"/><rect x="1303" y="330" width="11" height="63" rx="5" fill="var(--p-blue)"/><circle cx="1308" cy="393" r="8" fill="var(--p-blue)"/><rect x="1271" y="330" width="10" height="88" rx="5" fill="var(--p-blue)"/><circle cx="1276" cy="418" r="8" fill="var(--p-blue)"/></g>
 <g fill="var(--p-pink)" opacity=".38"><path d="M1530,855 Q1536,900 1517,937 Q1499,974 1455,1001 Q1410,1028 1335,1041 Q1260,1055 1223,1003 Q1186,952 1194,902 Q1201,852 1234,803 Q1266,754 1341,751 Q1416,747 1470,779 Q1524,810 1530,855Z"/></g>
 <g fill="var(--p-green)" opacity=".36"><path d="M511,929 Q533,1000 495,1062 Q458,1123 376,1132 Q293,1140 217,1147 Q140,1154 90,1107 Q41,1059 17,993 Q-7,928 60,880 Q128,831 211,843 Q294,855 392,856 Q490,857 511,929Z"/><rect x="183" y="1080" width="12" height="94" rx="6" fill="var(--p-green)"/><circle cx="189" cy="1174" r="9" fill="var(--p-green)"/><rect x="189" y="1080" width="6" height="104" rx="3" fill="var(--p-green)"/><circle cx="192" cy="1184" r="5" fill="var(--p-green)"/><rect x="280" y="1080" width="11" height="139" rx="5" fill="var(--p-green)"/><circle cx="285" cy="1219" r="8" fill="var(--p-green)"/><rect x="316" y="1080" width="12" height="81" rx="6" fill="var(--p-green)"/><circle cx="322" cy="1161" r="9" fill="var(--p-green)"/><rect x="267" y="1080" width="10" height="115" rx="5" fill="var(--p-green)"/><circle cx="271" cy="1195" r="7" fill="var(--p-green)"/></g></g></svg></div>
-  <div class="lyr l2" data-par="0.14"><svg viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice"><g filter="url(#rough)"><g fill="var(--p-red)" opacity=".34"><rect x="-80" y="560" width="760" height="70" rx="35" transform="rotate(-9 300.0 595.0)"/><rect x="980" y="640" width="700" height="52" rx="26" transform="rotate(7 1330.0 666.0)"/></g>
+  <div class="lyr l2"><svg viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice"><g filter="url(#rough)"><g fill="var(--p-red)" opacity=".34"><rect x="-80" y="560" width="760" height="70" rx="35" transform="rotate(-9 300.0 595.0)"/><rect x="980" y="640" width="700" height="52" rx="26" transform="rotate(7 1330.0 666.0)"/></g>
 <g fill="var(--p-violet)" opacity=".28"><path d="M1019,77 Q1041,120 1023,165 Q1006,211 946,219 Q885,227 832,226 Q778,225 769,186 Q760,147 731,112 Q702,78 741,47 Q779,16 836,-3 Q894,-23 946,6 Q997,35 1019,77Z"/><rect x="520" y="1080" width="640" height="46" rx="23" transform="rotate(-4 840.0 1103.0)"/></g>
 <g fill="var(--p-yellow)" opacity=".34"><rect x="1100" y="1120" width="520" height="40" rx="20" transform="rotate(-12 1360.0 1140.0)"/></g></g></svg></div>
 </div>
@@ -620,13 +616,12 @@ footer a { color: var(--ink-2); }
   const reduced = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } })();
   const root = document.documentElement;
 
-  // Paint parallax and hue drift
-  const lyrs = [...document.querySelectorAll('#paintbg .lyr')]; let tick = false;
+  // Hue drift: the paint holds still, and its hue follows the scroll
+  let tick = false;
   function onScroll() {
     if (tick) return; tick = true;
     requestAnimationFrame(() => { tick = false; const max = Math.max(1, root.scrollHeight - innerHeight), y = scrollY;
-      root.style.setProperty('--sp', (y / max).toFixed(4));
-      if (!reduced) lyrs.forEach(l => { l.style.transform = `translate3d(0, ${(-y * (+l.dataset.par || 0)).toFixed(1)}px, 0)`; }); });
+      root.style.setProperty('--sp', (y / max).toFixed(4)); });
   }
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
@@ -696,7 +691,8 @@ footer a { color: var(--ink-2); }
     if (playing) timer = setTimeout(next, dur);
   }
   function next() { k = (k + 1) % seq.items.length; if (k === 0) seq = G.generateValid({ seed: (Math.random() * 4294967296) >>> 0, minDwell: 5, maxDwell: 10, totalSec: 900 }); step(); }
-  function prog() { const p = Math.min(1, (performance.now() - t0) / Math.max(1, dur)); $('#sProg').style.width = (playing ? p * 100 : 0) + '%'; requestAnimationFrame(prog); }
+  // The bar grows by scaling on its own layer, so it never repaints the textured screen under it
+  function prog() { const p = Math.min(1, (performance.now() - t0) / Math.max(1, dur)); $('#sProg').style.transform = `scaleX(${playing ? p.toFixed(4) : 0})`; requestAnimationFrame(prog); }
   requestAnimationFrame(prog);
 
   // Optional sound: one soft tone per video, faded in and out
