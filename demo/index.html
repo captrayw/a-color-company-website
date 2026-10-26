@@ -241,7 +241,7 @@ footer a { color: var(--ink-2); }
     <div>
       <p class="kicker">The app · demo</p>
       <h1>Scroll your way <span class="hand">to</span> calm.</h1>
-      <p class="lede">A short-video feed where every video carries one color and one tone. Over 15 minutes the colors soften, the notes descend and the sound grows quieter, so the feed that usually winds you up helps you wind down.</p>
+      <p class="lede">A short-video feed where every video carries one color and one tone. As you scroll, the colors soften, the notes descend and the sound grows quieter, so the feed that usually winds you up helps you wind down.</p>
       <div class="cta" role="group" aria-label="Download the app">
         <a class="store" href="#" aria-disabled="true" aria-label="App Store, coming soon">
           <svg viewBox="0 0 28 28" aria-hidden="true"><rect x="7" y="2" width="14" height="24" rx="3.5" fill="none" stroke="#fff" stroke-width="2"/><circle cx="14" cy="22" r="1.4" fill="#fff"/></svg>
@@ -308,7 +308,7 @@ footer a { color: var(--ink-2); }
     <div class="sec-head rv"><h2><span class="swash" style="--pig: var(--p-pink)">How to use it</span></h2>
       <p>No settings to learn. Open it before bed or whenever your mind is racing.</p></div>
     <ol class="steps">
-      <li class="card rv"><h3>Open it</h3><p>The feed starts as soon as the app opens, and the sound starts with your first touch. A session lasts about 15 minutes, or around 120 short videos at a quick pace.</p></li>
+      <li class="card rv"><h3>Open it</h3><p>The feed starts as soon as the app opens, and the sound starts with your first touch.</p></li>
       <li class="card rv"><h3>Swipe as usual</h3><p>Swipe up for the next video, exactly like any feed. Each one swaps in a new color and note.</p></li>
       <li class="card rv"><h3>Linger on what feels good</h3><p>Stay on a video and its note keeps breathing. Your screen dims a little as the breaths grow longer.</p></li>
       <li class="card rv"><h3>Drift off</h3><p>Leave it for three minutes and the app rests. The screen can sleep and any touch wakes it.</p></li>
@@ -333,10 +333,10 @@ footer a { color: var(--ink-2); }
       <div class="sec-head rv" style="margin-bottom: 24px;"><h2><span class="swash" style="--pig: var(--p-green)">It learns what calms you</span></h2>
         <p>A small learning model watches one signal: how long you stay. Every session it gets a little better at showing you the colors and notes you linger on, without ever leaving the calm arc.</p></div>
       <div class="ml-flow">
-        <div class="ml-step rv"><span class="dot">1</span><div><h3>It notices lingers</h3><p>A video counts as a linger when you stay at least 1.5 times longer than on the videos around it, so later, slower parts of a session are not mistaken for favorites.</p></div></div>
+        <div class="ml-step rv"><span class="dot">1</span><div><h3>It notices lingers</h3><p>A video counts as a linger when you stay noticeably longer than on the videos around it, so later, slower parts of a session are not mistaken for favorites.</p></div></div>
         <div class="ml-step rv"><span class="dot">2</span><div><h3>It keeps score</h3><p>Every remembered video carries a running score of lingers against skips. The model samples from those scores (Thompson sampling) to decide what comes back.</p></div></div>
-        <div class="ml-step rv"><span class="dot">3</span><div><h3>It explores, too</h3><p>Favorites fill at most a quarter of each stage. The rest is fresh, and colors and notes you liked get a gentle boost in new draws.</p></div></div>
-        <div class="ml-step rv"><span class="dot">4</span><div><h3>It forgets slowly</h3><p>Scores fade by 15% each session, so last month's favorite makes room for tonight's mood.</p></div></div>
+        <div class="ml-step rv"><span class="dot">3</span><div><h3>It explores, too</h3><p>Favorites never take over: most of each stage stays fresh, and colors and notes you liked get a gentle boost in new draws.</p></div></div>
+        <div class="ml-step rv"><span class="dot">4</span><div><h3>It forgets slowly</h3><p>Scores fade a little each session, so last month's favorite makes room for tonight's mood.</p></div></div>
       </div>
     </div>
     <div class="card rv" style="--pig: var(--p-green); rotate: 0.5deg;">
@@ -757,7 +757,7 @@ footer a { color: var(--ink-2); }
     'Every color is new. The feed is still guessing.',
     'You lingered on teal and lavender. A few of them come back.',
     'Teal and lavender now return more often, with fresh colors in between.',
-    'Favorites stay capped at a quarter, so there is always something new.'
+    'Favorites stay a small share, so there is always something new.'
   ];
   let sess = 0;
   function drawTape() {
