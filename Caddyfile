@@ -1,0 +1,57 @@
+# How Railway serves the site. Railpack's static-file builder serves this folder with Caddy, using
+# this file in place of its default one (core/providers/staticfile/Caddyfile.template in
+# railwayapp/railpack); it fills in the StaticFileRoot placeholder below at build time. It differs
+# from the default in three ways, each to match how GitHub Pages served the site:
+# - no Content-Security-Policy header: the default one blocks the research guide's silent audio
+#   clip, which keeps its sound playing on an iPhone with the silent switch on;
+# - cache times: pages are checked every time, so a change shows at once, and other files are
+#   kept for ten minutes;
+# - a folder asked for without its closing slash (/demo) redirects to /demo/, so the page's
+#   relative links work.
+
+{
+	admin off
+	persist_config off
+	auto_https off
+	log {
+		format json
+	}
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+:{$PORT:80} {
+	log {
+		format json
+	}
+
+	respond /health 200
+
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	@page path / */ *.html
+	header @page Cache-Control "no-cache"
+	@file not path / */ *.html
+	header @file Cache-Control "public, max-age=600"
+
+	root * {{.StaticFileRoot}}
+
+	encode gzip zstd
+
+	try_files {path} {path}.html
+
+	file_server {
+		hide .git .github .gitignore .env* Caddyfile
+	}
+
+	handle_errors {
+		header Cache-Control "no-store"
+		rewrite * /{err.status_code}.html
+		file_server
+	}
+}
