@@ -5,7 +5,7 @@
 # - no Content-Security-Policy header: the default one blocks the research guide's silent audio
 #   clip, which keeps its sound playing on an iPhone with the silent switch on;
 # - cache times: pages are checked every time, so a change shows at once, and other files are
-#   kept for ten minutes;
+#   kept for ten minutes; no-transform keeps Cloudflare from adding its analytics script;
 # - a folder asked for without its closing slash (/demo) redirects to /demo/, so the page's
 #   relative links work.
 
@@ -35,9 +35,9 @@
 	}
 
 	@page path / */ *.html
-	header @page Cache-Control "no-cache"
+	header @page Cache-Control "no-cache, no-transform"
 	@file not path / */ *.html
-	header @file Cache-Control "public, max-age=600"
+	header @file Cache-Control "public, max-age=600, no-transform"
 
 	root * {{.StaticFileRoot}}
 
